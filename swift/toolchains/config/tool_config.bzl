@@ -15,6 +15,7 @@
 """Definitions used to configure toolchain tools."""
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:types.bzl", "types")
 
 def _tool_config_info_init(
         *,
@@ -108,7 +109,10 @@ def _tool_config_info_init(
 
         tool_executable_suffix = driver_config.get("tool_executable_suffix", "")
 
-        if not executable.endswith(tool_executable_suffix):
+        # A custom driver `File` is used as-is; only bare tool names and paths
+        # computed from the toolchain root need the suffix appended.
+        if (types.is_string(executable) and
+            not executable.endswith(tool_executable_suffix)):
             executable = "{}{}".format(executable, tool_executable_suffix)
 
     return {
